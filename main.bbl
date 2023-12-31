@@ -1,0 +1,41 @@
+\begin{thebibliography}{1}
+
+\bibitem{chinen_thesis}
+知念司泰.
+\newblock
+  ポリゴンモデリング技法をツールパス表現に直接変換するソフトウェアの開発,
+  2020.
+
+\bibitem{gleadall2021fullcontrol}
+Andrew Gleadall.
+\newblock Fullcontrol gcode designer: Open-source software for unconstrained
+  design in additive manufacturing.
+\newblock {\em Additive Manufacturing}, 46:102109, October 2021.
+\newblock Research Paper.
+
+\bibitem{akhoundi2020calculating}
+Behzad Akhoundi, Mohsen Nabipour, Farid Hajami, Saeed~Shirazian Band, and Amir
+  Mosavi.
+\newblock Calculating filament feed in the fused deposition modeling process to
+  correctly print continuous fiber composites in curved paths.
+\newblock {\em Materials (Basel, Switzerland)}, 13(20):4480, 2020.
+
+\bibitem{shinkogeisha}
+新工芸舎.
+\newblock \url{https://www.shinkogeisha.com/}.
+\newblock Accessed: \today.
+
+\bibitem{tildeprinted}
+Tilde printed.
+\newblock \url{https://www.tilde-printed.com/}.
+\newblock Accessed: \today.
+
+\bibitem{yamaguchi1991}
+山口 功, 木田 隆, 岡本 修, 狼 嘉彰, YAMAGUCHI Isao, KIDA Takashi,
+  OKAMOTO Osamu, and OOKAMI Yoshiaki.
+\newblock
+  クオータニオンとオイラー角によるキネマティックス表現の比較について.
+\newblock {\em 航空宇宙技術研究所資料 = Technical Memorandum of
+  National Aerospace Laboratory}, vol.636:15, 06 1991.
+
+\end{thebibliography}
