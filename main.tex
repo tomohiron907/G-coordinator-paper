@@ -39,13 +39,19 @@
 
 
 \section*{Abstract}
-This study focuses on the development of a novel method for generating G-code, the program read by a 3D printer. 
-We have developed an open-source software called G-coordinator, 
-which utilizes Python and mathematical functions to create G-code directly and construct three-dimensional shapes. 
-This alternative path generation technique, which is distinct from traditional slicing methods, 
-offers the potential to tackle complex shapes that were previously challenging to produce 
-and enables the formation of more precise printing conditions and paths. 
-It also facilitates the straightforward realization of mathematical shapes.\\
+
+This study focuses on the novel generation method of G-code, a program loaded into the machine,
+  for use in the fabrication process using MEX-type 3D printers.
+  We have developed an open-source software called G-coordinator (https://github.com/tomohiron907/G-coordinator), 
+  which directly creates G-code itself using Python and mathematical functions, 
+  enabling the construction of three-dimensional shapes. 
+  This approach, employing a path generation method distinct from traditional "slicing," 
+  allows for more precise adjustment of printing conditions. 
+  Furthermore, it facilitates the realization of shapes that were previously challenging and 
+  the straightforward implementation of mathematical shapes.
+In this paper, we elucidate the features of G-coordinator and provide an overview of its fabrication method 
+and implementation using the gcoordinator library. 
+Additionally, we delve into specific use cases that showcase the application of these techniques.\\
 \textgt{keywords}: \keywords{G-code, 3D Printing, Python, Open-source}
 
 \section*{要旨}
@@ -142,7 +148,7 @@ Figire\ref{fig:2}は，６角形のパスが下から積層されており，一
   \end{tabular}
 \end{table*}
 
-\subsection{Rhino+Grasshopper}
+\subsection{Rhinoceros+Grasshopper}
 RhinocerosとそのプラグインGrasshopperの組み合わせは，G-code Modelingの代表的な手法の一つであり，その特徴は以下の通りである．\\
 オープンソース: 非公開\\
 拡張性: 有り\\
@@ -361,7 +367,9 @@ pythonライブラリのみを使用する場合には，以下のコードを�
 
 \subsection{数理的な形状}\label{sec:mathmaticalShape}
 G-coordinatorではコードと関数を用いてモデリングを行うため，数理的な形状の実現が極めて容易にできる．
-Figure\ref{fig:fractal}は，フラクタル形状を3次元に押し出したもの．他にも，一葉双曲面や，リサージュ曲線を造形するためのコードも公開している．
+Figure\ref{fig:fractal}は，フラクタル形状を3次元に押し出したもの．
+関数を再帰的に呼び出すことで，フラクタルのような複雑な形状を短いコードで実現することができる．
+他にも，一葉双曲面や，リサージュ曲線を造形するためのコードも公開している．
 
 \begin{figure}[htbp]
   \includegraphics[width=\linewidth]{img/fractal.JPG}
