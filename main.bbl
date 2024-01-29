@@ -1,4 +1,4 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 
 \bibitem{chinen_thesis}
 知念司泰.
@@ -6,12 +6,64 @@
   ポリゴンモデリング技法をツールパス表現に直接変換するソフトウェアの開発,
   2020.
 
+\bibitem{silkworm}
+{Project Silkworm}.
+\newblock {Silkworm Repository}, 2024.
+\newblock Accessed: January 26, 2024.
+
+\bibitem{caterpillar}
+Hao Zheng, Barrak Darweesh, Heewon Lee, and Li~Yang.
+\newblock Caterpillar: A gcode translator in grasshopper.
+\newblock {\em Journal Name}, Year.
+
+\bibitem{molloy2018digital}
+Isabella Molloy and Tim Miller.
+\newblock Digital dexterity: Freeform 3d printing through direct toolpath
+  manipulation for crafted artifacts.
+\newblock In {\em ACADIA 2018}. MADE Research Group, Victoria University of
+  Wellington, 2018.
+
 \bibitem{gleadall2021fullcontrol}
 Andrew Gleadall.
 \newblock Fullcontrol gcode designer: Open-source software for unconstrained
   design in additive manufacturing.
 \newblock {\em Additive Manufacturing}, 46:102109, October 2021.
 \newblock Research Paper.
+
+\bibitem{fullcontrol}
+{FullControlXYZ}.
+\newblock {FullControl Repository}, 2024.
+\newblock Accessed: January 26, 2024.
+
+\bibitem{fullcontrolxyz}
+{FullControlXYZ}.
+\newblock {FullControl Models}, 2024.
+\newblock Accessed: January 26, 2024.
+
+\bibitem{analysis230}
+{Analysis230}.
+\newblock {Analysis230 Website}, 2024.
+\newblock Accessed: January 26, 2024.
+
+\bibitem{heintz}
+{Heinz Loepmeier}.
+\newblock {NozzleBoss Repository}, 2024.
+\newblock Accessed: January 26, 2024.
+
+\bibitem{kanada2016}
+金田泰.
+\newblock 手続き抽象化機能をもつプログラミング言語による
+  3d 印刷.
+\newblock In {\em 情報処理学会プログラミング研究会
+  発表資料}, 2 2016.
+\newblock 2015-5-(4).
+
+\bibitem{fabrix}
+S.~Koda and H.~Tanaka.
+\newblock Direct g-code manipulation for 3d material weaving.
+\newblock In Vijay~K. Varadan, editor, {\em Nanosensors, Biosensors, Info-Tech
+  Sensors and 3D Systems 2017}, volume 10167 of {\em Proceedings of SPIE - The
+  International Society for Optical Engineering}, page 1016719, 2017.
 
 \bibitem{akhoundi2020calculating}
 Behzad Akhoundi, Mohsen Nabipour, Farid Hajami, Saeed~Shirazian Band, and Amir

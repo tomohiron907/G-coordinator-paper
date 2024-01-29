@@ -100,6 +100,7 @@ G-coordinatorは，G-code Modelingの新たな手法として位置付けられ�
 G-coordinatorにより，3Dプリントにおける新たな可能性が開かれ，現行の技術では実現が難しい形状や構造の物体を容易に製造することが可能となる．
 
 \subsection{G-codeとは}
+\label{sec:WhatIsGcode}
 G-codeは，コンピュータ制御された機械操作を指示するための標準的なプログラミング言語であり，
 その本質はツール（MEX型3Dプリンタにおいてはノズル）の位置を記述する座標列にある．
 G-codeの基本的な構造は，各行においてツールの移動先の座標が指定され，これによってツールの位置が制御される．
@@ -110,80 +111,124 @@ G1 F1000 X100 Y80 Z0.4 E0.5
 このコマンドで，機械はノズルを(X, Y, Z) = (100, 80, 0.4)の座標に1000mm/minの速さで移動させながらフィラメントを0.5mm送る．
 これらのコマンドが，G-codeの内部では，数百から数万行繰り返される．
 G-codeには印刷速度やフィラメント送り量など様々な要素があるものの，これらは，ソフトウェアで自動的に決定できるため，
-G-code Modelingにおいてユーザはノズルの移動する座標列のみを考慮すれば良い． 
+G-code Modelingにおいて基本的には，ユーザはノズルの移動する座標列のみを考慮すれば良い．
+場合によっては，座表以外の要素も考慮に入れたいこともあるが，それに関しては\ref{sec:IndividualSettings}章にて詳述する．
 
 ここで，上記のG-codeの性質から，G-coordinatorでのモデリングに不可欠な二つの用語を定義する．
 \begin{itemize}
   \item セグメント：ノズルが移動する最小単位の線分．
   \item パス：樹脂が連続的に押し出されてできる一本の経路．
 \end{itemize}
-
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.8\linewidth]{img/path_segment.png}
+  \caption{path and segment}
+  \label{fig:2}
+\end{figure}
 Figire\ref{fig:2}は，６角形のパスが下から積層されており，一番上のパスの最初のセグメントまでが表示されている．
 このように，セグメントが集まってパスになり，パスが集まってひとつの造形物になる．
 
 
-\begin{figure}[htbp]
-  \includegraphics[width=\linewidth]{img/path_segment.png}
-  \caption{path and segment}
-  \label{fig:2}
-\end{figure}
+
 
 \section{関連研究}
-現代の3Dプリントにおいて，G-code Modeling の手法としてRhinocerosとそのプラグインGrasshopperやFullcontrolGCodeDesignerなどが広く利用されている．
-本章では，これらの手法とG-coordinatorとの比較に焦点を当て，それらの特徴と差異を明らかにする．
-\begin{table*}
-  \centering
-  \caption{ソフトウェアの比較}
-  \label{table:software_comparison}
-  \begin{tabular}{|c|c|c|c|c|c|}
-    \hline
-    \textbf{ソフトウェア} & \textbf{オープンソース} & \textbf{拡張性} & \textbf{多軸印刷} & \textbf{インフィル} & \textbf{スキル要求} \\
-    \hline
-    Rhino+GH & $\times$ & $\bigcirc$ & $\triangle$ & $\triangle$ & 低 \\
-    \hline
-    FullControl & $\bigcirc$ & $\triangle$ & $\times$ & $\times$ & 低 \\
-    \hline
-    G-coordinator & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & 高 \\
-    \hline
-  \end{tabular}
-\end{table*}
 
-\subsection{Rhinoceros+Grasshopper}
-RhinocerosとそのプラグインGrasshopperの組み合わせは，G-code Modelingの代表的な手法の一つであり，その特徴は以下の通りである．\\
-オープンソース: 非公開\\
-拡張性: 有り\\
-多軸制御: 有り\\
-インフィル: 一部制限あり\\
-要求スキル: 低い\\
-Rhino+Grasshopperはオープンソースではないが，アドオンやプラグイン等の拡張性は高く，
-多軸制御やインフィルに関してはアドオンで実現できるものも多い．
-また，プログラミングの形式がビジュアルプログラミングであることから，プログラミングに慣れていないユーザにも扱いやすいソフトウェアと言える．
-しかし，ソフトウェアの値段が比較的高価であり，一般の利用者は容易にそのソフトウェアを試用することが難しい状況にある．
+\ref{sec:WhatIsGcode}節で述べたように，G-codeの本質はツールの座標列であることから，3Dモデルを介さずに直接G-codeを生成する手法は数多く存在する．
+G-code Modeling の手法として今日もっとも広く利用されているのは，RhinocerosとそのプラグインGrasshopperを用いた手法である．
+これらのソフトウェアのなかで，Silkwarm\cite{silkworm}やCaterpillar\cite{caterpillar}などのアドオンを用いることで，ユーザはより容易にG-codeを生成することができる．
+また，アドオンを自作することによって，より細かなニーズに合わせてG-code生成を実現できる．
+しかし，Rhinocerosは有償ソフトであり，値段が比較的高価であることから，一般の3Dプリントユーザが気軽にG-code Modelignを試すことが難しい状況にある．
+加えて，Rhinocerosはオープンソースではないため，ソフトウェア改良をユーザ自身が行うことはできない．
+これらのの欠点を除けば，Rhino+GrasshopperはG-code Modelingの手法として広く受け入れられているものであり，Molloyらの研究\cite{molloy2018digital}では
+G-code Modeling(論文内ではForm Responsible Methodと呼ばれている)を用いて，産業デザインの観点から応用ベースの実験として家具などの製造実験などが行われている．
 
-\subsection{FullControlGCodeDesigner}
-FullContolGcodeDesinger\cite{gleadall2021fullcontrol}は，Excel上で動作するマクロとしてのソフトウェアである．\\
-オープンソース: 公開\\
-拡張性: 制限あり\\
-多軸制御: 非対応\\
-インフィル: 非対応\\
-要求スキル: 低い\\
-FullContolGcodeDesingerはオープンソースであるが，拡張性には限りがあり，多軸制御やインフィルの生成には対応していない．
-Excelシートであるため，新たなソフトをインストールする必要がなく，初めG-code Modelingを行うユーザに向いているが，
-Excelのみで造形を完成させる性質上，複雑な形状や関数の扱いには限界がある．
-また，その点を克服したpythonライブラリ，fullcontrolも登場しているが，python環境をユーザが整える必要があるなどの弱点もある．
+もう一つ広く使用されているソフトウェアとして，fullcontrol Gcode Designer\cite{gleadall2021fullcontrol}がある．これは，Excel上で動作するマクロとしてのソフトウェアである．
+Excelシートであるため，新たなソフトをインストールする必要がなく，初めてG-code Modelingを行うユーザに向いているが，その反面，複雑な形状や関数の扱いには限界がある．
+その問題点に対して，fullcontrolをPythonライブラリとして再実装したfullcontrol\cite{fullcontrol}も登場しているが，python環境をユーザが整える必要があるなどの弱点もある．
 
-\subsection{G-coordinator}
-G-coordinatorは，G-code Modelingの新しい手法であり，以下がその特徴である．\\
-オープンソース: 公開\\
-拡張性: 有り\\
-多軸制御: 有り\\
-インフィル: 有り\\
-要求スキル: 高い\\
-G-coordinatorはオープンソースであり，あらゆるコードやライブラリを公開している．
-拡張性に優れ，Pythonを用いた造形により，様々なデータソースを活用可能である．
-多軸制御やインフィルの生成にも対応している．
-しかしながら，G-coordinatorでの造形には多少の数学的知識とコードのスキルを要求してしまう側面がある．
-これらの特徴により，G-coordinatorはG-code Modelingの新たな展開を可能にしており，従来の手法と比較して優れた柔軟性と拡張性を提供している．
+fullcontrolを下敷きにして開発されたwebアプリfullControlXYZ\cite{fullcontrolxyz}も存在するが，基本的なパラメータの調整ができる程度であり，G-code Modelingの手法としては限界がある．
+
+web上で利用できるソフトウェアとしては，Create Incの開発したwebアプリ\cite{analysis230}も存在する．
+こちらは，web上でfullcontrolと同様の機能を提供しているが，こちらも基本的なパラメータの調整ができる程度であり，拡張性には限界がある．
+
+他のソフトウェアのアドオンとして提供されるG-code生成手法として，Heintzらの研究\cite{heintz}では，3DCGソフトblenderのアドオンとしてG-codeを生成する手法が提案されている．
+blenderのモデリング機能を用いて複雑な造形を実現できる反面，層状にスライスされたモデルを用いてG-codeを生成するため，ノズルのツールパスを完全にマニュアルコントロールすることはできない．
+
+G-coordinatorと同様，pythonを用いてG-code生成手法としては，金田らの研究\cite{kanada2016}がある．
+3Dプリンタにおける造形物をパスの連なりとして捉え，そのパスをオブジェクト指向の枠組みで記述するという方向性はG-coordinatorと共通しているものの，
+3Dプリンタでの造形に重要なインフィル生成機能や，多軸制御には対応していない．
+
+他のG-code生成手法としては，Illustratorのプラグインで，ベクター画像を元にG-codeを生成できるFabrix\cite{fabrix}も存在する．
+パスごとの細かな制御が可能になっているものの，コーディングやノードベースプログラミングを用いないG-code生成のため，先述の関連研究とは違う方向性のものである．
+
+以上の関連研究を踏まえて，G-coordintorの特徴をまとめると以下の通りである．
+\begin{itemize}
+  \item オープンソース
+  \item pythonでの造形，印刷条件の設定
+  \item ライブラリを用いた拡張性
+  \item 多軸制御
+  \item インフィルの生成
+  \item GUIアプリとPythonライブラリの両方を提供
+  
+\end{itemize}
+
+
+
+%現代の3Dプリントにおいて，G-code Modeling の手法としてRhinocerosとそのプラグインGrasshopperやFullcontrolGCodeDesignerなどが広く利用されている．
+%本章では，これらの手法とG-coordinatorとの比較に焦点を当て，それらの特徴と差異を明らかにする．
+%\begin{table*}
+%  \centering
+%  \caption{ソフトウェアの比較}
+%  \label{table:software_comparison}
+%  \begin{tabular}{|c|c|c|c|c|c|}
+%    \hline
+%    \textbf{ソフトウェア} & \textbf{オープンソース} & \textbf{拡張性} & \textbf{多軸印刷} & \textbf{インフィル} & \textbf{スキル要求} \\
+%    \hline
+%    Rhino+GH & $\times$ & $\bigcirc$ & $\triangle$ & $\triangle$ & 低 \\
+%    \hline
+%    FullControl & $\bigcirc$ & $\triangle$ & $\times$ & $\times$ & 低 \\
+%    \hline
+%    G-coordinator & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & 高 \\
+%    \hline
+%  \end{tabular}
+%\end{table*}
+%
+%\subsection{Rhinoceros+Grasshopper}
+%RhinocerosとそのプラグインGrasshopperの組み合わせは，G-code Modelingの代表的な手法の一つであり，その特徴は以下の通りである．\\
+%オープンソース: 非公開\\
+%拡張性: 有り\\
+%多軸制御: 有り\\
+%インフィル: 一部制限あり\\
+%要求スキル: 低い\\
+%Rhino+Grasshopperはオープンソースではないが，アドオンやプラグイン等の拡張性は高く，
+%多軸制御やインフィルに関してはアドオンで実現できるものも多い．
+%また，プログラミングの形式がビジュアルプログラミングであることから，プログラミングに慣れていないユーザにも扱いやすいソフトウェアと言える．
+%しかし，ソフトウェアの値段が比較的高価であり，一般の利用者は容易にそのソフトウェアを試用することが難しい状況にある．
+%
+%\subsection{FullControlGCodeDesigner}
+%FullContolGcodeDesinger\cite{gleadall2021fullcontrol}は，Excel上で動作するマクロとしてのソフトウェアである．\\
+%オープンソース: 公開\\
+%拡張性: 制限あり\\
+%多軸制御: 非対応\\
+%インフィル: 非対応\\
+%要求スキル: 低い\\
+%FullContolGcodeDesingerはオープンソースであるが，拡張性には限りがあり，多軸制御やインフィルの生成には対応していない．
+%Excelシートであるため，新たなソフトをインストールする必要がなく，初めG-code Modelingを行うユーザに向いているが，
+%Excelのみで造形を完成させる性質上，複雑な形状や関数の扱いには限界がある．
+%また，その点を克服したpythonライブラリ，fullcontrolも登場しているが，python環境をユーザが整える必要があるなどの弱点もある．
+%
+%\subsection{G-coordinator}
+%G-coordinatorは，G-code Modelingの新しい手法であり，以下がその特徴である．\\
+%オープンソース: 公開\\
+%拡張性: 有り\\
+%多軸制御: 有り\\
+%インフィル: 有り\\
+%要求スキル: 高い\\
+%G-coordinatorはオープンソースであり，あらゆるコードやライブラリを公開している．
+%拡張性に優れ，Pythonを用いた造形により，様々なデータソースを活用可能である．
+%多軸制御やインフィルの生成にも対応している．
+%しかしながら，G-coordinatorでの造形には多少の数学的知識とコードのスキルを要求してしまう側面がある．
+%これらの特徴により，G-coordinatorはG-code Modelingの新たな展開を可能にしており，従来の手法と比較して優れた柔軟性と拡張性を提供している．
 
 \section{実装}
 \subsection{G-coordinatorの造形方法}
@@ -258,6 +303,7 @@ gcoordinatorライブラリのTransform クラスのメソッドを利用する�
   \item gc.Transform.offset():  パスを指定した距離だけオフセットさせる
 
 \subsection{個別印刷設定} 
+\label{sec:IndividualSettings}
 G-coordinatorでは，以下に示す印刷設定を指定することができる．
 
 \begin{enumerate}
@@ -412,6 +458,31 @@ gyroid\_infill関数はインフィルを計算する関数であり，外枠の
   \caption{底部にインフィルを付与した小物トレー}
   \label{fig:infill}
 \end{figure}
+
+\section{ユーザフィードバックと評価}
+ユーザビリティは，新しいソフトウェアの発展において重要な要素となる．
+本研究では，G-coordinatorのユーザビリティを評価するために，ユーザにアンケートを実施した．
+以下に，G-coordinatorのユーザからのフィードバックを示す．
+\begin{quote}
+  GUIアプリのお陰でプログラム初心者でも使えて大変感謝してます。また、グラスホッパーのように高価なソフトウェアを使用することなくパラメトリックデザインのプリントができるので嬉しいです。
+\end{quote}
+
+\begin{quote}
+  VBAのfullcontrolから移植して利用しています。サンプル集とビュアーがこれほどありがたいものかと感じています。無償で公開いただいていることに感謝しています。
+\end{quote}
+
+\begin{quote}
+  すごく面白い。普通のmodeling+slicerと違って、編み物をしていくような感じ。普通のプリントだとヘッドを押し付けて積層するけど、柔らかくなったフィラメントを置いていく感じ。
+\end{quote}
+
+\begin{quote}
+  面白いけど自由自在に思うような形を作るのは難しい。数学の知識が必要になってしまう。
+\end{quote}
+
+自由度の高いG-code Modelingの手法を広く普及させる目的に沿って，G-coordinatorをオープンソース化したことがユーザからの評価につながっている．
+しかし，同時に造形の難しさについても指摘されている．これには主に二つの側面がある．一つは造形コードを書く難しさ．
+この点において，G-coordinatorでは数多くのサンプルコードを提供している他，公式ドキュメントでは造形コードのクイックスタートも示している．
+もう一つは，形状を数学的(関数として)表現する難しさ．この課題に対しては，現時点ではまだ解決策を確立することができていない．
 
 \section{将来展望}
 \subsection{開発中のテスト機能}
