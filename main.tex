@@ -19,6 +19,8 @@
 \usepackage[margin=1in]{geometry} 
 \usepackage[dvipdfmx]{graphicx}
 \usepackage{natbib}
+\usepackage{indentfirst}
+
 \usepackage{url}
 
 \begin{document}
@@ -58,8 +60,8 @@ Additionally, we delve into specific use cases that showcase the application of 
 本研究は，MEX型3Dプリンタを用いて造形を行う際に，機械に読み込ませるプログラムであるG-codeの新たな生成方法に関するものである．
 Pythonと数学的な関数を用いてG-codeそのものを直接作成し，3次元形状を構築することできるG-coordinator 
 ( https://github.com/tomohiron907/G-coordinator )というオープンソースソフトウェアを開発した．
-従来の「スライス」とは異なる手法によるパス生成により，より精密な印刷条件の調整が可能になるとともに，
-いままでは難しかった形状や，数理的な形状の容易な実現が期待できる．
+従来の「スライス」とは異なる手法でのパス生成により，より精密な印刷条件の調整が可能になるとともに，
+いままでは難しかった形状や，数理的な形状の容易な実現できるようになった．
 本論文では，G-coordinatorの特徴を述べるとともに，その造形方法やgcoordinatorライブラリを用いた実装方法についてその概要を述べる．
 また，それらの技術を用いた具体的なユースケースについても詳述する．\\
 \textgt{キーワード}: \keywords{G-code, 3D プリント, Python, オープンソース}
@@ -69,10 +71,10 @@ Pythonと数学的な関数を用いてG-codeそのものを直接作成し，3�
 
 \section{はじめに}
 \subsection{G-coordinatorとは}
-G-coordinatorは，Pythonを用いて3Dプリンタ用G-codeを生成できるソフトウェアである．
+G-coordinatorは，Pythonを用いてMEX型3Dプリンタ用G-codeを生成できるソフトウェアである．
 従来のスライスソフトによるG-code生成と異なり，造形から印刷条件の調整まで3Dプリントに必要な工程の全てをG-coordinatorひとつで完結させることができる．
 Windows, Macに対応したGUIアプリケーションに加えて，Python用のライブラリも公開している．
-どちらもPythonを用いて造形と印刷条件の設定を行うが，GUIアプリに関しては，Python環境を整える必要がなく，誰でも簡単にG-codeを生成することができる．
+GUIアプリに関しては，Python環境を整える必要がなく，誰でも簡単にG-codeを生成することができる．
 Figure\ref{fig:1}にG-coordinator（GUIアプリ）のスクリーンショットを示す．G-codeを書き出す手順は主に４つのステップから構成される．
 \begin{enumerate}
   \item コードを書いて，造形を決定
@@ -89,13 +91,13 @@ Figure\ref{fig:1}にG-coordinator（GUIアプリ）のスクリーンショッ�
   
 \subsection{背景}
 一般的に，3Dプリンタを用いる際にはCAD等で3Dデータを作成し，その3Dデータをスライスソフトで処理し，G-codeを生成する．
-スライスソフトは，3Dプリンタのノズルパスを自動で算出することができ，多くのユーザに取って，より簡単にG-codeを作成することができる．
-しかし，より細かい制御やマニュアルでの制御を求めるユーザにとっては，スライスソフトでは３Dプリンタの挙動や印刷設定のマニュアル制御ができない．
+スライスソフトは，3Dプリンタのノズルパスを自動で作成することができ，多くのユーザに取って，簡単にG-codeを生成することができる．
+しかし，より細かいマニュアルでの制御を求めるユーザにとっては，スライスソフトでは３Dプリンタの挙動や印刷設定のマニュアル制御ができない．
 そこで，近年，3Dモデルを介さず直接G-codeを作成するG-code Modeling\cite{chinen_thesis}の手法が台頭している．
 G-coordinatorは，G-code Modelingの新たな手法として位置付けられる．
 
 \subsection{目的}
-本研究は，広範なユーザに向けた高い自由度を有するG-codeモデリングを実現し，
+本研究は，広範なユーザに向けた高い自由度を有するG-code Modelingを実現し，
 これにより従来のCADやスライサでは到達できなかった造形を具現化することを目的としている．
 G-coordinatorにより，3Dプリントにおける新たな可能性が開かれ，現行の技術では実現が難しい形状や構造の物体を容易に製造することが可能となる．
 
@@ -103,7 +105,7 @@ G-coordinatorにより，3Dプリントにおける新たな可能性が開か�
 \label{sec:WhatIsGcode}
 G-codeは，コンピュータ制御された機械操作を指示するための標準的なプログラミング言語であり，
 その本質はツール（MEX型3Dプリンタにおいてはノズル）の位置を記述する座標列にある．
-G-codeの基本的な構造は，各行においてツールの移動先の座標が指定され，これによってツールの位置が制御される．
+G-codeの基本的な構造は，ツールの移動先の座表とその移動スピード，その間の射出量が記述された行が繰り返されるものである．
 たとえば，以下は一般的なG-codeの例である．
 \begin{verbatim}
 G1 F1000 X100 Y80 Z0.4 E0.5 
@@ -112,7 +114,7 @@ G1 F1000 X100 Y80 Z0.4 E0.5
 これらのコマンドが，G-codeの内部では，数百から数万行繰り返される．
 G-codeには印刷速度やフィラメント送り量など様々な要素があるものの，これらは，ソフトウェアで自動的に決定できるため，
 G-code Modelingにおいて基本的には，ユーザはノズルの移動する座標列のみを考慮すれば良い．
-場合によっては，座表以外の要素も考慮に入れたいこともあるが，それに関しては\ref{sec:IndividualSettings}章にて詳述する．
+場合によっては，座表以外の要素も考慮に入れたいこともあるが，それらに関しては\ref{sec:IndividualSettings}章にて詳述する．
 
 ここで，上記のG-codeの性質から，G-coordinatorでのモデリングに不可欠な二つの用語を定義する．
 \begin{itemize}
@@ -125,7 +127,7 @@ G-code Modelingにおいて基本的には，ユーザはノズルの移動す�
   \caption{path and segment}
   \label{fig:2}
 \end{figure}
-Figire\ref{fig:2}は，６角形のパスが下から積層されており，一番上のパスの最初のセグメントまでが表示されている．
+Figire\ref{fig:2}は，６つのセグメントが集まってできた６角形のパスが下から積層されており，一番上のパスの最初のセグメントまでが表示されている．
 このように，セグメントが集まってパスになり，パスが集まってひとつの造形物になる．
 
 
@@ -136,30 +138,32 @@ Figire\ref{fig:2}は，６角形のパスが下から積層されており，一
 \ref{sec:WhatIsGcode}節で述べたように，G-codeの本質はツールの座標列であることから，3Dモデルを介さずに直接G-codeを生成する手法は数多く存在する．
 G-code Modeling の手法として今日もっとも広く利用されているのは，RhinocerosとそのプラグインGrasshopperを用いた手法である．
 これらのソフトウェアのなかで，Silkwarm\cite{silkworm}やCaterpillar\cite{caterpillar}などのアドオンを用いることで，ユーザはより容易にG-codeを生成することができる．
-また，アドオンを自作することによって，より細かなニーズに合わせてG-code生成を実現できる．
-しかし，Rhinocerosは有償ソフトであり，値段が比較的高価であることから，一般の3Dプリントユーザが気軽にG-code Modelignを試すことが難しい状況にある．
+また，アドオンを自作することによって，個人のニーズに合わせたG-code生成も実現できる．
+しかし，Rhinocerosは有償ソフトであり，値段が比較的高価であることから，一般の3Dプリントユーザが気軽にG-code Modelingを試すことが難しい状況にある．
 加えて，Rhinocerosはオープンソースではないため，ソフトウェア改良をユーザ自身が行うことはできない．
-これらのの欠点を除けば，Rhino+GrasshopperはG-code Modelingの手法として広く受け入れられているものであり，Molloyらの研究\cite{molloy2018digital}では
+これらの欠点を除けば，Rhino+GrasshopperはG-code Modelingの手法として最も広く受け入れられているものであり，Molloyらの研究\cite{molloy2018digital}では
 G-code Modeling(論文内ではForm Responsible Methodと呼ばれている)を用いて，産業デザインの観点から応用ベースの実験として家具などの製造実験などが行われている．
 
-もう一つ広く使用されているソフトウェアとして，fullcontrol Gcode Designer\cite{gleadall2021fullcontrol}がある．これは，Excel上で動作するマクロとしてのソフトウェアである．
+もう一つ広く使用されているソフトウェアとして，Gleadallの開発したFullControl Gcode Designer\cite{gleadall2021fullcontrol}がある．
+これは，Excel上で動作するマクロとしてのソフトウェアである．
 Excelシートであるため，新たなソフトをインストールする必要がなく，初めてG-code Modelingを行うユーザに向いているが，その反面，複雑な形状や関数の扱いには限界がある．
-その問題点に対して，fullcontrolをPythonライブラリとして再実装したfullcontrol\cite{fullcontrol}も登場しているが，python環境をユーザが整える必要があるなどの弱点もある．
+その問題点に対して，FullControl Gcode Designer をPythonライブラリとして再実装したFullControl\cite{fullcontrol}も登場しているが，Python環境をユーザが整える必要があるなどの弱点もある他，
+GUIがないため，初めてG-code Modelingを行う人にとっては障壁もある．
 
-fullcontrolを下敷きにして開発されたwebアプリfullControlXYZ\cite{fullcontrolxyz}も存在するが，基本的なパラメータの調整ができる程度であり，G-code Modelingの手法としては限界がある．
+FullControlを下敷きにして同氏が開発したwebアプリFullControlXYZ\cite{fullcontrolxyz}も存在するが，基本的なパラメータの調整ができる程度であり，G-code Modelingの手法としては限界がある．
 
 web上で利用できるソフトウェアとしては，Create Incの開発したwebアプリ\cite{analysis230}も存在する．
-こちらは，web上でfullcontrolと同様の機能を提供しているが，こちらも基本的なパラメータの調整ができる程度であり，拡張性には限界がある．
+こちらは，web上でFullControl GCode Designerをベースにをコードで造形することを目指したアプリだが，一般的なプログラミング言語ではなく，独自の仕様で自由度が高くない問題点がある．
 
 他のソフトウェアのアドオンとして提供されるG-code生成手法として，Heintzらの研究\cite{heintz}では，3DCGソフトblenderのアドオンとしてG-codeを生成する手法が提案されている．
-blenderのモデリング機能を用いて複雑な造形を実現できる反面，層状にスライスされたモデルを用いてG-codeを生成するため，ノズルのツールパスを完全にマニュアルコントロールすることはできない．
+blenderのモデリング機能を用いて複雑な造形を実現できる反面，層状にスライスされたモデルを用いてG-codeを生成するため，スパイラルモードが実現できないなど，ノズルのツールパスを完全にマニュアルコントロールするものとは言い難い．
 
-G-coordinatorと同様，pythonを用いてG-code生成手法としては，金田らの研究\cite{kanada2016}がある．
+G-coordinatorと同様，Pythonを用いてG-code生成手法としては，金田の研究\cite{kanada2016}がある．
 3Dプリンタにおける造形物をパスの連なりとして捉え，そのパスをオブジェクト指向の枠組みで記述するという方向性はG-coordinatorと共通しているものの，
 3Dプリンタでの造形に重要なインフィル生成機能や，多軸制御には対応していない．
 
 他のG-code生成手法としては，Illustratorのプラグインで，ベクター画像を元にG-codeを生成できるFabrix\cite{fabrix}も存在する．
-パスごとの細かな制御が可能になっているものの，コーディングやノードベースプログラミングを用いないG-code生成のため，先述の関連研究とは違う方向性のものである．
+パスごとの細かな制御が可能になっているものの，コーディングやノードベースプログラミングを用いないG-code生成のため，先述の関連研究とは異なる方向性のものである．
 
 以上の関連研究を踏まえて，G-coordintorの特徴をまとめると以下の通りである．
 \begin{itemize}
@@ -173,69 +177,13 @@ G-coordinatorと同様，pythonを用いてG-code生成手法としては，金�
 \end{itemize}
 
 
-
-%現代の3Dプリントにおいて，G-code Modeling の手法としてRhinocerosとそのプラグインGrasshopperやFullcontrolGCodeDesignerなどが広く利用されている．
-%本章では，これらの手法とG-coordinatorとの比較に焦点を当て，それらの特徴と差異を明らかにする．
-%\begin{table*}
-%  \centering
-%  \caption{ソフトウェアの比較}
-%  \label{table:software_comparison}
-%  \begin{tabular}{|c|c|c|c|c|c|}
-%    \hline
-%    \textbf{ソフトウェア} & \textbf{オープンソース} & \textbf{拡張性} & \textbf{多軸印刷} & \textbf{インフィル} & \textbf{スキル要求} \\
-%    \hline
-%    Rhino+GH & $\times$ & $\bigcirc$ & $\triangle$ & $\triangle$ & 低 \\
-%    \hline
-%    FullControl & $\bigcirc$ & $\triangle$ & $\times$ & $\times$ & 低 \\
-%    \hline
-%    G-coordinator & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & $\bigcirc$ & 高 \\
-%    \hline
-%  \end{tabular}
-%\end{table*}
-%
-%\subsection{Rhinoceros+Grasshopper}
-%RhinocerosとそのプラグインGrasshopperの組み合わせは，G-code Modelingの代表的な手法の一つであり，その特徴は以下の通りである．\\
-%オープンソース: 非公開\\
-%拡張性: 有り\\
-%多軸制御: 有り\\
-%インフィル: 一部制限あり\\
-%要求スキル: 低い\\
-%Rhino+Grasshopperはオープンソースではないが，アドオンやプラグイン等の拡張性は高く，
-%多軸制御やインフィルに関してはアドオンで実現できるものも多い．
-%また，プログラミングの形式がビジュアルプログラミングであることから，プログラミングに慣れていないユーザにも扱いやすいソフトウェアと言える．
-%しかし，ソフトウェアの値段が比較的高価であり，一般の利用者は容易にそのソフトウェアを試用することが難しい状況にある．
-%
-%\subsection{FullControlGCodeDesigner}
-%FullContolGcodeDesinger\cite{gleadall2021fullcontrol}は，Excel上で動作するマクロとしてのソフトウェアである．\\
-%オープンソース: 公開\\
-%拡張性: 制限あり\\
-%多軸制御: 非対応\\
-%インフィル: 非対応\\
-%要求スキル: 低い\\
-%FullContolGcodeDesingerはオープンソースであるが，拡張性には限りがあり，多軸制御やインフィルの生成には対応していない．
-%Excelシートであるため，新たなソフトをインストールする必要がなく，初めG-code Modelingを行うユーザに向いているが，
-%Excelのみで造形を完成させる性質上，複雑な形状や関数の扱いには限界がある．
-%また，その点を克服したpythonライブラリ，fullcontrolも登場しているが，python環境をユーザが整える必要があるなどの弱点もある．
-%
-%\subsection{G-coordinator}
-%G-coordinatorは，G-code Modelingの新しい手法であり，以下がその特徴である．\\
-%オープンソース: 公開\\
-%拡張性: 有り\\
-%多軸制御: 有り\\
-%インフィル: 有り\\
-%要求スキル: 高い\\
-%G-coordinatorはオープンソースであり，あらゆるコードやライブラリを公開している．
-%拡張性に優れ，Pythonを用いた造形により，様々なデータソースを活用可能である．
-%多軸制御やインフィルの生成にも対応している．
-%しかしながら，G-coordinatorでの造形には多少の数学的知識とコードのスキルを要求してしまう側面がある．
-%これらの特徴により，G-coordinatorはG-code Modelingの新たな展開を可能にしており，従来の手法と比較して優れた柔軟性と拡張性を提供している．
-
 \section{実装}
 \subsection{G-coordinatorの造形方法}
 G-coordinatorで造形を行うための方法を，最も簡易な円柱モデルを用いて述べる．
 なお，円柱壁の造形コードを補足資料に掲載している．いかに複雑な形状であっても，基本的な造形のプロセスは同じである．
 G-coordinatorでは，パスのx, y, z座標列を計算して，それらの座標列からPathオブジェクトを作成する．
-より詳細な造形コードの作成に関してはG-coordinator公式ドキュメントを参照されたい．
+その過程はG-coordinator(GUI), gcoordinator(Pythonライブラリ)の両方で共通している．生成されたG-code保存に関しては両者で異なるが，それに関しては，\ref{sec:GcodeExport}にて詳述する．
+より詳細な造形コードの作成に関してはG-coordinator公式ドキュメント\cite{gcoordinator}を参照されたい．
 \subsubsection{円形パスの生成}
 円柱は円形のパスが縦に造形されたものであることから，まず円形のパスを生成する．
 
@@ -247,7 +195,7 @@ G-coordinatorでは，パスのx, y, z座標列を計算して，それらの座
 
 まず，numpyライブラリ，gcoordinatorライブラリをインポートする．
 次に，full\_objectという空のリストを作成する．
-これは，後にPathオブジェクトを格納するためのものである．
+これは，後にPathオブジェクトを格納するためのものであり，もちろん他の変数名でも問題ない．
 
 \begin{lstlisting}
   arg = np.linspace(0, 2*np.pi, 100)
@@ -268,9 +216,14 @@ z座表列に関しては，argと同じ項数で，値が0.2（レイヤー厚�
 
 x, y, z座標列を引数として，Pathオブジェクトのインスタンスを生成する．生成したPathオブジェクトをfull\_objectに追加する．
 作成したfull\_objectをgui\_export関数に渡すことで，GUI上で確認することができる．
-
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.8\linewidth]{img/circle_path.png}
+  \caption{circle path}
+  \label{fig:circlepath}
+\end{figure}
 なお，厳密な表現をすれば，上記のコードで作成できるのは円ではなく，正99角形である．
-これは，argが0から2πまでで工数が100の等差数列であるから，角度列を順に繋いでできるセグメントは99個存在するからである．
+これは，argが0から2πまでで項数が100の等差数列であるから，角度列を順に繋いでできるセグメントは99個存在するからである．
 しかし，半径10mmの場合，99分割ほどの段階で，3Dプリントにおいては無視できる程度にセグメントは小さくなる．
 もちろん，分割数を大きくすれば，精度は上昇するが，同時に計算時間も大きくなってしまう．
 G-codeには，円弧補完のコマンド(G02, G03)があるが，G-coordinatorでは現在は未実装であるので，円を造形する場合はこのような方法で行う．
@@ -287,20 +240,37 @@ for height in range(100):
   wall = ...
   full_object.append(wall)
 \end{lstlisting}
-このforループの中で，heightは0から99まで1ずつ増加する．
-x, y座標列は円形パスと同じで，z座標列をheightの値に応じて0.2ずつ大きくすれば良い．
-ここで，heightに1を足してから0.2をかけているのは，ループの始めにおいて，heightの値が0の時に，ノズルの高さが0.2にしたいからである．
+このforループの中で，heightは0から99まで1ずつ増加する．つまり，第何レイヤーかを示すループインデックスである．
+x, y座標列は前節と同じで，z座標列をheightの値に応じて0.2ずつ大きくすれば良い．
+ここで，heightに1を足してから0.2をかけているのは，ループの一番始め，つまりheightの値が0の時に，ノズルの高さが0.2にしたいからである．
 そして，forループごとにパスオブジェクトを作成し，full\_objectに追加すれば良い．
 即ち，full\_objectには，印刷すべきパスが印刷順に100個のパスが格納されている．
 円柱を造形するための造形コード全体を付録に載せる．
 
 \subsubsection{パスの変形}
-gcoordinatorライブラリのTransform クラスのメソッドを利用することで，作成したパスを変形させることができる．
+gcoordinatorライブラリのTransform クラスのメソッド(関数)を利用することで，作成したパスを変形させることができる．
+つまり，関数にパスを入力として与え，内部で処理され変形したパスが出力されるのである．以下に，既に実装済みの関数を示す．
 \begin{itemize}
   \item gc.Transform.move(): パスを平行移動,回転させる
   \item gc.Transform.rotate\_xy(): XY平面上で回転させる
   \item gc.Transform.stretch(): パスを伸縮させる
   \item gc.Transform.offset():  パスを指定した距離だけオフセットさせる
+\end{itemize}
+例えば，offset関数を繰り返すことで前節で作成した円柱にブリムを付すことができる．
+\begin{lstlisting}
+  if height == 0:
+    for i in range(10):
+      brim = gc.Transform.offset(wall, (i+1) * 0.4)
+      full_object.apped(brim)
+\end{lstlisting}
+上記のコードをforループの中に追加すれば，Fig.\ref{fig:cylinderbrim}に示すようなブリムを実装できる．
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.6\linewidth]{img/cylinder_brim.png}
+  \caption{cylinder path with brim}
+  \label{fig:cylinderbrim}
+\end{figure}
+
 
 \subsection{個別印刷設定} 
 \label{sec:IndividualSettings}
@@ -346,7 +316,7 @@ G-coordinatorでは，以下に示す印刷設定を指定することができ�
 
 G-coordinatorでは，パラメータツリーで設定したグローバルな印刷設定に対して，個別のパスへの詳細設定をコードから指定することができる．
 
-例として，ベッド定着のためにファーストレイヤにおいてのみ，印刷速度を遅くしたいという状況を考える．
+例として，ベッド定着のためにファーストレイヤの印刷速度を遅くしたいという状況を考える．
 作成したPathオブジェクトの属性としてこれらの印刷設定の値を格納できる．
 従って，以下のコードをforループの中に追加すれば，ファーストレイヤの印刷速度をマニュアルで指定できる．
 \begin{lstlisting}
@@ -360,14 +330,16 @@ if height == 0:
 
 \subsection{G-code}
 \subsubsection{G-code出力方法}
-前節までの内容で，ノズルが移動する座標列の情報とその時の印刷設定の情報を内部に保持したパスオブジェクトを作成することができた．
-本節では，それらのパスからG-codeに変換する方法について述べる．
+\label{sec:GcodeExport}
+前節までの内容で，ノズルが移動する座標列の情報とその時の印刷設定の情報を内部に保持したPathオブジェクトを作成することができた．
+本節では，G-codeそのものを直接作成しを保存する方法について述べる．
+ただしG-coordinator(GUIアプリ)と，gcoordinator(Pythonライブラリ)では，G-codeの保存方法が異なることに注意されたい．
 
-G-coordinator(GUIアプリ)では，Fig\ref{fig:1}の画面の右下のG-code Exportボタンを押すことで，G-codeを出力することができる．
-なお，スタート，エンドG-codeは，画面右上のmachine settignsボタンを押して出てくるポップアップウィンドウで設定することができる．
+GUIアプリでは，Fig\ref{fig:1}の画面の右下のG-code Exportボタンを押すことで，G-codeを出力することができる．
+なお，start, end G-codeは，画面右上のmachine settignsボタンを押して出てくるポップアップウィンドウで設定することができる．
 
-pythonライブラリのみを使用する場合には，以下のコードを造形コードの最後に追加する．
-
+Pythonライブラリ単体で使用する場合には，以下のコードを造形コードの最後に追加する．
+start, end G-codeが保存されたテキストファイルのパスと，出力するG-codeの名前はそれぞれの環境にあわせて調整が必要である．
 \begin{lstlisting}
   gcode = gc.GCode(full_object)
   gcode.start_gcode("path/to/start_gcode.txt")
@@ -401,9 +373,9 @@ pythonライブラリのみを使用する場合には，以下のコードを�
 
 \subsection{網目テクスチャ}
 
-京都の新工芸舎\cite{shinkogeisha}のTilde\cite{tildeprinted}にインスパイアを受けて作成した作成をFig.\ref{fig:WaveTray}に示す．
-ノズルをジグザグに蛇行させ，一層ごとに位相を反転させることで，積層痕を意匠化させた．
-スライスソフトでは，直接ノズルパスを編集できないため，テクスチャを付与することが困難であった．
+京都の新工芸舎\cite{shinkogeisha}のTilde\cite{tildeprinted}にインスパイアを受けた作成をFig.\ref{fig:WaveTray}に示す．
+比較的太いノズルをジグザグに蛇行させ，一層ごとに位相を反転させることで，積層痕を意匠化させた．
+スライスソフトでは，直接ノズルパスを調整できないため，テクスチャを付与することが困難であった．
 
 \begin{figure}[htbp]
   \includegraphics[width=\linewidth]{img/wave_tray.JPG}
@@ -424,11 +396,11 @@ Figure\ref{fig:fractal}は，フラクタル形状を3次元に押し出した�
 \end{figure}
 
 \subsection{振動による図柄表示}
-Pythonの持つ豊富なライブラリを用いれば，あらゆるものをモデリングのために活用できる．
+Pythonの持つ豊富なライブラリを用いれば，あらゆるデータをモデリングのために活用できる．
 Figure\ref{fig:audrey}は，OpenCVのライブラリを用いて，モノクロ写真から，ある座標でのピクセルの濃さを抽出，その値を振動の振幅に重みとしてかけている．
 白のプレートを印刷後，黒の樹脂で振動パターンを印刷している．その結果，ミクロでは不規則な振動が，マクロでは写真に見える状況を実現している．
 従来のCADによる造形では，写真を参考にして造形を行うことはできるが，写真データを直接扱うことはできなかった．
-pythonを用いて造形を行う恩恵により，いままでよりも多彩なデータソースを扱うことができる．
+Pythonを用いて造形を行う恩恵により，いままでよりも多彩なデータソースを扱うことができる．
 \begin{figure}[htbp]
   \includegraphics[width=\linewidth]{img/audrey_2.jpg}
   \caption{画像の振動パターン化}
@@ -436,7 +408,7 @@ pythonを用いて造形を行う恩恵により，いままでよりも多彩�
 \end{figure}
 
 \subsection{インフィル}
-他のG-code Modelingと比較して，G-coordinatorの大きな特徴のひとつとして，Fig.\ref{fig:infill}に示すようなインフィルを利用できることが挙げられる．
+他のG-code Modelingに対して，G-coordinatorが持つ大きな特徴のひとつとして，Fig.\ref{fig:infill}に示すようなインフィルを利用できることが挙げられる．
 インフィルを利用できるようになると，実用性を意識したものを作成することができる．
 現在は，line infiil, gyroid infillの二種類を利用可能である．
 
@@ -447,7 +419,7 @@ if height<20:
     full_object.append(gyroid)
 \end{lstlisting}
 
-ここで，wallオブジェクトは外枠を表すPathクラスのオブジェクトである．
+ここで，wallは外枠を表すPathクラスのオブジェクトである．
 gyroid\_infill関数はインフィルを計算する関数であり，外枠のパスを入力として，その内部を埋めるパスを返す関数である．
 ただし，インフィルは一本の曲線で表されるものではなく，複数のパスがまとまって，１レイヤー分のインフィルが構成されているため，
 厳密には関数からの返り値として返されるのはPathListクラスのオブジェクトである．
@@ -462,7 +434,7 @@ gyroid\_infill関数はインフィルを計算する関数であり，外枠の
 \section{ユーザフィードバックと評価}
 ユーザビリティは，新しいソフトウェアの発展において重要な要素となる．
 本研究では，G-coordinatorのユーザビリティを評価するために，ユーザにアンケートを実施した．
-以下に，G-coordinatorのユーザからのフィードバックを示す．
+以下に，G-coordinatorユーザからのフィードバックを示す．
 \begin{quote}
   GUIアプリのお陰でプログラム初心者でも使えて大変感謝してます。また、グラスホッパーのように高価なソフトウェアを使用することなくパラメトリックデザインのプリントができるので嬉しいです。
 \end{quote}
@@ -481,15 +453,15 @@ gyroid\_infill関数はインフィルを計算する関数であり，外枠の
 
 自由度の高いG-code Modelingの手法を広く普及させる目的に沿って，G-coordinatorをオープンソース化したことがユーザからの評価につながっている．
 しかし，同時に造形の難しさについても指摘されている．これには主に二つの側面がある．一つは造形コードを書く難しさ．
-この点において，G-coordinatorでは数多くのサンプルコードを提供している他，公式ドキュメントでは造形コードのクイックスタートも示している．
-もう一つは，形状を数学的(関数として)表現する難しさ．この課題に対しては，現時点ではまだ解決策を確立することができていない．
+この点については，G-coordinatorでは数多くのサンプルコードを提供している他，公式ドキュメント\cite{gcoordinator}で造形コードを作るためのクイックスタートも示している．
+もう一つは，形状を数学的(関数として)表現する難しさがある．この課題に対しては，現時点ではまだ解決策を確立することができていない．
 
 \section{将来展望}
 \subsection{開発中のテスト機能}
 G-coordinatorを用いて様々な造形を可能にするためにいくつかの機能を開発中である．
 何れの機能も既に現在のG-coordinator ver3.0.0にはアルファ版の機能として実装されている，
 \subsubsection{数式処理}
-\ref{sec:mathmaticalShape}節に示すように，G-coordinatorの機能を利用して数式処理を行うことができる．
+\ref{sec:mathmaticalShape}節に示すように，G-coordinatorは数理的な形状を実現させることが非常に得意である．
 現在は，さらにその点を生かすべく，様々な関数やクラスを開発中である．
 具体的な例として，陽関数のプロットやパスの生成は容易である一方で，陰関数のプロットは高い難易度を伴う．
 この課題に対処するため，numpyのmeshgridを活用し，陰関数によって表現された曲線や曲面をより容易に生成できる枠組みを開発中している．
@@ -501,7 +473,7 @@ G-coordinatorを用いて様々な造形を可能にするためにいくつか�
 
 具体的には，クォータニオン（四元数）を活用したノズルの姿勢制御の開発に焦点を当てている．
 現行のG-coordinatorの多軸制御手法では，オイラー角や回転行列を使用して姿勢制御を行っている．
-それに対し，クォータニオンを導入することで，ジンバルロックなどの特異点をなくしつつ，より柔軟で安定した姿勢制御が可能となる．\cite{yamaguchi1991}
+それに対し，クォータニオンを導入することで，ジンバルロックなどの特異点を回避しつつ，より柔軟で安定した姿勢制御が可能となる．\cite{yamaguchi1991}
 さらに，計算量が削減され，処理時間が短縮されるという利点もある．
 
 新たな手法による多軸制御G-codeの生成においても積極的に取り組んでおり，これによりユーザがより容易に多軸造形を行える環境を提供することを目指している．
@@ -526,12 +498,12 @@ G-coordinatorは，数学とコードにより，いままで出来なかった�
 そこで，現在想定しているG-coordinatorの将来像は大きく分けて二つある．
 
 一つは，Processingなどを代表とするビジュアルアートを実物化させるためのソフトウェアとしての活用である．
-Processingは，プログラムを書いて画面上に図形や形状を描画することができるソフトウェアであるが，
-G-coordinatorはプログラムを書いて実際に触れるモノを作成できるソフトウェアである．
+Processingとは，プログラムを書いて画面上に図形や形状を描画することができるソフトウェアである．
+それに対して，G-coordinatorは，実際に触れるものを作り出せるため，Processingの3次元版となり得る．
 これにより，アーティストやデザイナーは数学的なアルゴリズムを用いて，従来不可能だった美しい形状を3Dプリンティングで具現化することが可能になる．
 
 もう一つは，G-coordinatorが数理的な形状に得意な性質を生かし，物理シミュレーションや計算力学を応用して形状を実物化させるソフトウェアとしての利用である．
-具体的には，トポロジー最適化のアルゴリズムをG-coordiantorの内部で実装し，最適化計算からG-code生成までをシームレスに行うことができるソフトウェアの実現を目指している．
+例えば，トポロジー最適化のアルゴリズムをG-coordiantorの内部で実装し，最適化計算からG-code生成までをシームレスに行うことができるソフトウェアの実現も期待できる．
 これにより，エンジニアや科学者は複雑な物理的な現象をシミュレートし，それを具現化するのにG-coordinatorを活用できる．
 
 プログラムを使った3D形状の生成と制御が主眼となる点で，どちらの展望も共通している．

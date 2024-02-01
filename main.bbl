@@ -8,13 +8,15 @@
 
 \bibitem{silkworm}
 {Project Silkworm}.
-\newblock {Silkworm Repository}, 2024.
+\newblock {Silkworm Repository}.
+\newblock \url{https://github.com/ProjectSilkworm/Silkworm}, 2024.
 \newblock Accessed: January 26, 2024.
 
 \bibitem{caterpillar}
-Hao Zheng, Barrak Darweesh, Heewon Lee, and Li~Yang.
-\newblock Caterpillar: A gcode translator in grasshopper.
-\newblock {\em Journal Name}, Year.
+Haojie Zheng, Barrak Darweesh, Heewon Lee, and Li~Yang.
+\newblock Caterpillar - a gcode translator in grasshopper.
+\newblock {\em Proceedings of the 24th Conference on Computer Aided
+  Architectural Design Research in Asia (CAADRIA) [Volume 2]}, 2019.
 
 \bibitem{molloy2018digital}
 Isabella Molloy and Tim Miller.
@@ -31,23 +33,27 @@ Andrew Gleadall.
 \newblock Research Paper.
 
 \bibitem{fullcontrol}
-{FullControlXYZ}.
-\newblock {FullControl Repository}, 2024.
+Andrew Gleadall.
+\newblock Fullcontrol.
+\newblock \url{https://github.com/FullControlXYZ/fullcontrol}, 2024.
 \newblock Accessed: January 26, 2024.
 
 \bibitem{fullcontrolxyz}
-{FullControlXYZ}.
-\newblock {FullControl Models}, 2024.
+Andrew Gleadall.
+\newblock Fullcontrolxyz.
+\newblock \url{https://fullcontrol.xyz/#/models}, 2024.
 \newblock Accessed: January 26, 2024.
 
 \bibitem{analysis230}
-{Analysis230}.
-\newblock {Analysis230 Website}, 2024.
+Create Inc.
+\newblock {Analysis230 Website}.
+\newblock \url{https://analysis230.github.io/index.html}, 2024.
 \newblock Accessed: January 26, 2024.
 
 \bibitem{heintz}
 {Heinz Loepmeier}.
-\newblock {NozzleBoss Repository}, 2024.
+\newblock {NozzleBoss Repository}.
+\newblock \url{https://github.com/Heinz-Loepmeier/nozzleboss}, 2024.
 \newblock Accessed: January 26, 2024.
 
 \bibitem{kanada2016}
@@ -64,6 +70,12 @@ S.~Koda and H.~Tanaka.
 \newblock In Vijay~K. Varadan, editor, {\em Nanosensors, Biosensors, Info-Tech
   Sensors and 3D Systems 2017}, volume 10167 of {\em Proceedings of SPIE - The
   International Society for Optical Engineering}, page 1016719, 2017.
+
+\bibitem{gcoordinator}
+Taniguchi Tomohiro.
+\newblock G-coordiantor, gcoordinator documentation.
+\newblock \url{https://gcoordinator.readthedocs.io/ja/latest/}, 2024.
+\newblock Accessed on: 2024-01-31.
 
 \bibitem{akhoundi2020calculating}
 Behzad Akhoundi, Mohsen Nabipour, Farid Hajami, Saeed~Shirazian Band, and Amir
